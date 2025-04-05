@@ -2,10 +2,12 @@ package logging
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 // contextKey is the logger string type used to avoid context collisions.
@@ -24,11 +26,15 @@ func NewLogger(dev bool, level string) *slog.Logger {
 
 	if dev {
 		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource: true,
+			Level:       getLogLevel(level),
+			AddSource:   true,
+			ReplaceAttr: replaceAttr(false),
 		}))
 	} else {
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource: true,
+			Level:       getLogLevel(level),
+			AddSource:   true,
+			ReplaceAttr: replaceAttr(true),
 		}))
 	}
 
@@ -57,4 +63,53 @@ func LoggerFromContext(ctx context.Context) *slog.Logger {
 		return logger
 	}
 	return DefaultLogger()
+}
+
+type slogAttr func(groups []string, attr slog.Attr) slog.Attr
+
+func replaceAttr(nano bool) slogAttr {
+	return func(groups []string, attr slog.Attr) slog.Attr {
+		if attr.Key == slog.TimeKey {
+			attr.Key = "time"
+			attr.Value = slog.StringValue(getTimeFormat(attr.Value.Time(), nano))
+		}
+		if attr.Key == slog.MessageKey {
+			attr.Key = "message"
+		}
+		if attr.Key == slog.SourceKey {
+			source := attr.Value.Any().(*slog.Source)
+			attr.Key = "caller"
+			attr.Value = slog.StringValue(fmt.Sprintf("%s:%d", source.File, source.Line))
+		}
+		return attr
+	}
+}
+
+const (
+	levelDebug = "DEBUG"
+	levelInfo  = "INFO"
+	levelWarn  = "WARN"
+	levelError = "ERROR"
+)
+
+func getLogLevel(level string) slog.Level {
+	switch strings.ToUpper(strings.TrimSpace(level)) {
+	case levelDebug:
+		return slog.LevelDebug
+	case levelInfo:
+		return slog.LevelInfo
+	case levelWarn:
+		return slog.LevelWarn
+	case levelError:
+		return slog.LevelError
+	}
+	return slog.LevelInfo
+}
+
+func getTimeFormat(t time.Time, nano bool) string {
+	if nano {
+		return t.Format(time.RFC3339Nano)
+	} else {
+		return t.Format(time.RFC3339)
+	}
 }
