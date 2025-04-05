@@ -1,0 +1,30 @@
+run:
+  go: 1.24
+  concurrency: 4
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    - asasalint
+    - asciicheck
+    - errcheck
+    - exportloopref
+    - gofmt
+    - gofumpt
+    - goimports
+    - gomodguard
+    - goprintffuncname
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - nolintlint
+    - prealloc
+    - reassign
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unused
+    - whitespace
