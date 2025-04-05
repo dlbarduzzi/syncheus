@@ -2,7 +2,7 @@ run:
 	@go run ./cmd/syncheus
 
 lint:
-	@golangci-lint run -c ./golangci.yaml ./...
+	@golangci-lint run -c ./.golangci.yaml ./...
 
 test:
 	@go test ./... --cover --coverprofile=coverage.out
