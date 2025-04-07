@@ -6,6 +6,7 @@ import (
 
 	"github.com/dlbarduzzi/syncheus/internal/logging"
 	"github.com/dlbarduzzi/syncheus/internal/server"
+	"github.com/dlbarduzzi/syncheus/internal/syncheus"
 )
 
 func main() {
@@ -23,10 +24,15 @@ func main() {
 func start(ctx context.Context) error {
 	logger := logging.LoggerFromContext(ctx)
 
+	app, err := syncheus.NewSyncheus(logger)
+	if err != nil {
+		return err
+	}
+
 	srv := server.NewServer(8000, logger)
 	srv.OnShutdown(func() {
-		logger.Info("app tasks to run before shutdown...")
+		app.Shutdown()
 	})
 
-	return srv.Start(ctx, nil)
+	return srv.Start(ctx, app.Routes())
 }
