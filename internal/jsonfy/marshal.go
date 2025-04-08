@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func WriteJson(w http.ResponseWriter, code int, data interface{}, headers http.Header) error {
+func WriteJson(w http.ResponseWriter, data interface{}, code int, headers http.Header) error {
 	res, err := json.Marshal(data)
 	if err != nil {
 		return err
