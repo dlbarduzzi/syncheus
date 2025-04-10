@@ -5,8 +5,10 @@ import (
 	"os"
 
 	"github.com/dlbarduzzi/syncheus/internal/logging"
+	"github.com/dlbarduzzi/syncheus/internal/registry"
 	"github.com/dlbarduzzi/syncheus/internal/server"
 	"github.com/dlbarduzzi/syncheus/internal/syncheus"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -24,15 +26,28 @@ func main() {
 func start(ctx context.Context) error {
 	logger := logging.LoggerFromContext(ctx)
 
-	app, err := syncheus.NewSyncheus(logger)
+	reg, err := registry.NewRegistry()
 	if err != nil {
 		return err
 	}
 
-	srv := server.NewServer(8000, logger)
+	appConfig := setSyncheusConfig(reg)
+
+	app, err := syncheus.NewSyncheus(logger, appConfig)
+	if err != nil {
+		return err
+	}
+
+	srv := server.NewServer(app.Port(), logger)
 	srv.OnShutdown(func() {
 		app.Shutdown()
 	})
 
 	return srv.Start(ctx, app.Routes())
+}
+
+func setSyncheusConfig(v *viper.Viper) *syncheus.Config {
+	return &syncheus.Config{
+		Port: v.GetInt("SY_APP_PORT"),
+	}
 }

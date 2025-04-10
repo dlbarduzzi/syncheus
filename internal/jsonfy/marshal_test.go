@@ -11,11 +11,11 @@ func TestWriteJson(t *testing.T) {
 
 	res := map[string]interface{}{"foo": "bar"}
 
-	entryKey := "Foo"
-	entryValue := "Bar"
+	key := "Foo"
+	value := "Bar"
 
 	headers := http.Header{}
-	headers.Add(entryKey, entryValue)
+	headers.Add(key, value)
 
 	w := httptest.NewRecorder()
 
@@ -28,8 +28,8 @@ func TestWriteJson(t *testing.T) {
 		t.Errorf("expected status code to be %d; got %d", http.StatusOK, w.Code)
 	}
 
-	headerValue := w.Header().Get(entryKey)
-	if headerValue != entryValue {
-		t.Errorf("expected header %s to be %s; got %s", entryKey, entryValue, headerValue)
+	header := w.Header().Get(key)
+	if header != value {
+		t.Errorf("expected header %s to be %s; got %s", key, value, header)
 	}
 }
