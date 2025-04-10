@@ -71,7 +71,7 @@ func replaceAttr(nano bool) slogAttr {
 	return func(groups []string, attr slog.Attr) slog.Attr {
 		if attr.Key == slog.TimeKey {
 			attr.Key = "time"
-			attr.Value = slog.StringValue(getTimeFormat(attr.Value.Time(), nano))
+			attr.Value = slog.StringValue(getTimeFormat(attr.Value.Time().UTC(), nano))
 		}
 		if attr.Key == slog.MessageKey {
 			attr.Key = "message"
@@ -108,8 +108,8 @@ func getLogLevel(level string) slog.Level {
 
 func getTimeFormat(t time.Time, nano bool) string {
 	if nano {
-		return t.Format(time.RFC3339Nano)
+		return t.Format("2006-01-02T15:04:05.000000000Z")
 	} else {
-		return t.Format(time.RFC3339)
+		return t.Format("2006-01-02T15:04:05")
 	}
 }

@@ -75,7 +75,7 @@ func TestLoggerContext(t *testing.T) {
 func TestReplaceAttr(t *testing.T) {
 	t.Parallel()
 
-	tm := time.Now()
+	tm := time.Now().UTC()
 	sr := &slog.Source{Function: "main.main", File: "/path/to/file", Line: 12}
 
 	tests := []struct {
@@ -90,14 +90,14 @@ func TestReplaceAttr(t *testing.T) {
 			name:        "time dev",
 			loggerKey:   slog.TimeKey,
 			loggerValue: slog.TimeValue(tm),
-			wantValue:   tm.Format(time.RFC3339),
+			wantValue:   tm.Format("2006-01-02T15:04:05"),
 		},
 		{
 			name:        "time prod",
 			nano:        true,
 			loggerKey:   slog.TimeKey,
 			loggerValue: slog.TimeValue(tm),
-			wantValue:   tm.Format(time.RFC3339Nano),
+			wantValue:   tm.Format("2006-01-02T15:04:05.000000000Z"),
 		},
 		{
 			name:      "message",
