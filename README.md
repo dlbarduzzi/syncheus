@@ -51,7 +51,7 @@ SELECT current_user;
 
 Follow instructions to install the `migrate` tool [HERE](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate).
 
-Generate a pair of migration files. Visit the [migrations](../migrations) folder to see all the migration files and content.
+Generate a pair of migration files. Visit the [migrations](./migrations) folder to see all the migration files and content.
 
 ```sh
 migrate create -seq -ext=.sql -dir=./migrations create_users_table
