@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  [type="text"],
+  [type="password"],
+  [type="email"],
+  [type="number"],
+  [type="url"],
+  [type="date"],
+  [type="datetime-local"],
+  [type="month"],
+  [type="week"],
+  [type="time"],
+  [type="search"],
+  [type="tel"],
+  [type="radio"],
+  [multiple],
+  select,
+  select[multiple],
+  textarea {
+    @apply focus:outline-none focus:ring-0 focus:ring-offset-0;
+  }
+}

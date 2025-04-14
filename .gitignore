@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# CUSTOM
+.env*
+!.env.example
+.local/
+docker-data/
