@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button"
+import NextLink from "next/link"
+
 export default function Page() {
   return (
     <div>
@@ -7,7 +10,9 @@ export default function Page() {
         </h1>
       </section>
       <div className="p-4">
-        Welcome!
+        <Button asChild>
+          <NextLink href="/sign-up" prefetch={false}>Sign up</NextLink>
+        </Button>
       </div>
     </div>
   )
