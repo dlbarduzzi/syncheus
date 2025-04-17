@@ -1,16 +1,20 @@
+import { users } from "@/db/schemas/users"
 import { delay } from "@/lib/utils"
 import { procedure, router } from "@/trpc/main"
+import { eq } from "drizzle-orm"
 
 export const usersRouter = router({
   getOne: procedure.query(async ({ ctx }) => {
-    const user = ctx.db.users.getOne()
+    const user = await ctx.db.query.users.findFirst({
+      where: eq(users.email, "john@email.com"),
+    })
     return { ok: true, user }
   }),
   getAll: procedure.query(async ({ ctx }) => {
     await delay(1000)
-    const users = ctx.db.users.getAll()
+    const users = await ctx.db.query.users.findMany({ limit: 3 })
     if (users.length < 1) {
-      ctx.logger.info("no users found in database")
+      ctx.logger.warn("no users found in database")
     }
     return { ok: true, users }
   }),
