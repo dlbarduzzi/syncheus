@@ -3,6 +3,8 @@ import { ClientResponse } from "./_components/client-response"
 import { getQueryServer, trpcServer } from "@/trpc/server/query-server"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 
+export const dynamic = "force-dynamic"
+
 export default function Page() {
   const trpc = trpcServer
   const query = getQueryServer()
