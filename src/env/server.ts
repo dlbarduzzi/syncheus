@@ -4,7 +4,7 @@ import { createEnv } from "@t3-oss/env-nextjs"
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["test", "development", "production"]),
-    LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]),
+    LOG_LEVEL: z.enum(["debug", "info", "warn", "error", "silent"]),
     DATABASE_URL: z.string().url(),
   },
   onValidationError: issues => {
