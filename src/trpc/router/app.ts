@@ -7,7 +7,7 @@ export const appRouter = router({
   hello: procedure
     .input(z.object({ name: z.string() }))
     .query(opts => {
-      opts.ctx.logger(`saying hello to ${opts.input.name}`)
+      opts.ctx.logger.info(`saying hello to ${opts.input.name}`)
       return { greeting: `Hello, ${opts.input.name}` }
     }),
   users: usersRouter,

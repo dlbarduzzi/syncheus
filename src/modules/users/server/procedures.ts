@@ -10,7 +10,7 @@ export const usersRouter = router({
     await delay(1000)
     const users = ctx.db.users.getAll()
     if (users.length < 1) {
-      ctx.logger("no users found in database")
+      ctx.logger.info("no users found in database")
     }
     return { ok: true, users }
   }),

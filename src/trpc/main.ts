@@ -3,6 +3,8 @@ import superjson from "superjson"
 import { cache } from "react"
 import { initTRPC } from "@trpc/server"
 
+import { logger } from "@/lib/logger"
+
 const t = initTRPC.create({
   transformer: superjson,
 })
@@ -21,8 +23,7 @@ export const procedure = t.procedure.use(({ next }) => {
         },
       },
     },
-    // eslint-disable-next-line no-console
-    logger: (msg: string) => console.log(`logger | INFO | ${msg}`),
+    logger,
   } })
 })
 
