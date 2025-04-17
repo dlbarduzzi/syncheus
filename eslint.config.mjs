@@ -17,8 +17,8 @@ export default antfu({
     semi: false,
     quotes: "double",
     indent: 2,
-    ignores: [".next/**", "node_modules/**", "**/migrations/**"],
   },
+  ignores: [".next/**", "node_modules/**", "src/db/migrations/**"],
 }, {
   rules: {
     "style/arrow-parens": "off",
