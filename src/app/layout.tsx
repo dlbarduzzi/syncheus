@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 import { siteConfig } from "@/lib/site"
 import { fontGeistSans, fontGeistMono } from "@/lib/fonts"
 
+import { TRPCReactProvider } from "@/trpc/client/provider"
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -43,7 +45,9 @@ export default function RootLayout({
           fontGeistMono.variable,
         )}
       >
-        {children}
+        <TRPCReactProvider>
+          {children}
+        </TRPCReactProvider>
       </body>
     </html>
   )
