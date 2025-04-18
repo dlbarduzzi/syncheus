@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { SignUp } from "@/components/auth/sign-up"
 
 export default function Page() {
   return (
@@ -9,7 +9,7 @@ export default function Page() {
         </h1>
       </section>
       <div className="p-4">
-        <Button type="button" size="md">Create Account</Button>
+        <SignUp />
       </div>
     </div>
   )

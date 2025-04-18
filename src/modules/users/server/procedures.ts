@@ -1,7 +1,7 @@
-import { users } from "@/db/schemas/users"
-import { delay } from "@/lib/utils"
-import { procedure, router } from "@/trpc/main"
 import { eq } from "drizzle-orm"
+import { delay } from "@/lib/utils"
+import { users } from "@/db/schemas/users"
+import { procedure, router } from "@/trpc/main"
 
 export const usersRouter = router({
   getOne: procedure.query(async ({ ctx }) => {
