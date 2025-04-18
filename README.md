@@ -10,11 +10,11 @@
 
 ### Sign up
 
-[ ] Check if user is already signed in. If yes, redirect.
-[ ] Handle user input error.
-[ ] Handle server error.
-[ ] Send email verification on success.
-[ ] Do not create session. This should be created only after email verification.
+- [ ] Check if user is already signed in. If yes, redirect.
+- [ ] Handle user input error.
+- [ ] Handle server error.
+- [ ] Send email verification on success.
+- [ ] Do not create session. This should be created only after email verification.
 
 ## License
 
