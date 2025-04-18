@@ -4,6 +4,7 @@ import type { SignUpSchema } from "@/modules/users/schemas"
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useMutation } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import {
@@ -21,10 +22,14 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { cn } from "@/lib/utils"
+import { useTRPC } from "@/trpc/client/provider"
 import { signUpSchema } from "@/modules/users/schemas"
 
 export function SignUp() {
   const [isTermsChecked, setIsTermsChecked] = useState(true)
+
+  const trpc = useTRPC()
+  const query = useMutation(trpc.users.register.mutationOptions())
 
   const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
@@ -36,18 +41,21 @@ export function SignUp() {
 
   const { errors, isSubmitting } = form.formState
 
-  function onSubmit(data: SignUpSchema) {
+  async function onSubmit(data: SignUpSchema) {
     if (!isTermsChecked) {
       // eslint-disable-next-line no-alert
       alert("[ERROR]: You must accept terms and conditions")
       return
     }
+
+    const res = await query.mutateAsync(data)
+
     // eslint-disable-next-line no-console
-    console.log(data)
+    console.log(res)
   }
 
   return (
-    <div className="mx-auto w-full max-w-[400px] border px-8 py-9">
+    <div className="mx-auto w-full max-w-[400px] border border-gray-200 px-8 py-9">
       <div>
         <h2 className="font-bold">Sign up</h2>
       </div>
