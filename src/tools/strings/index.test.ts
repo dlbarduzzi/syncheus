@@ -7,6 +7,7 @@ import {
   hasSpecialChar,
   hasLowercaseChar,
   hasUppercaseChar,
+  generateOTP,
 } from "./index"
 
 describe("strings.index", () => {
@@ -45,5 +46,24 @@ describe("strings.index", () => {
       expect(hasUppercaseChar("heLlo")).toBeTruthy()
       expect(hasUppercaseChar("hello")).toBeFalsy()
     })
+  })
+})
+
+describe("strings.generateOTP", () => {
+  it("should generate an OTP of default length 6", () => {
+    const otp = generateOTP()
+    expect(otp).toHaveLength(6)
+    expect(/^\d{6}$/.test(otp)).toBe(true)
+  })
+  it("should generate an OTP of specified length", () => {
+    const length = 8
+    const otp = generateOTP(length)
+    expect(otp).toHaveLength(length)
+    expect(/^\d{8}$/.test(otp)).toBe(true)
+  })
+  it("should generate different OTPs on each call (likely)", () => {
+    const otp1 = generateOTP()
+    const otp2 = generateOTP()
+    expect(otp1).not.toEqual(otp2)
   })
 })

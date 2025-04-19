@@ -15,6 +15,20 @@
       "when": 1745075249662,
       "tag": "0001_swift_toro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1745089824876,
+      "tag": "0002_lean_grey_gargoyle",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1745090305040,
+      "tag": "0003_puzzling_lester",
+      "breakpoints": true
     }
   ]
 }

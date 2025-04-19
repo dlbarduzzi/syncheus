@@ -4,17 +4,51 @@ import bcrypt from "bcryptjs"
 import postgres from "postgres"
 
 import { eq } from "drizzle-orm"
-import { delay } from "@/lib/utils"
+
+import { otps } from "@/db/schemas/otps"
 import { users } from "@/db/schemas/users"
 import { passwords } from "@/db/schemas/passwords"
-import { lowercase } from "@/tools/strings"
+
+import { delay } from "@/lib/utils"
 import { signUpSchema } from "@/modules/users/schemas"
 import { procedure, router } from "@/trpc/main"
+import { generateOTP, lowercase } from "@/tools/strings"
 
 async function findUserByEmail(ctx: AppContext, email: string) {
   return await ctx.db.query.users.findFirst({
     where: eq(users.email, lowercase(email)),
   })
+}
+
+async function findOtpByUserId(ctx: AppContext, userId: string) {
+  return await ctx.db.query.otps.findFirst({
+    where: eq(otps.userId, userId),
+  })
+}
+
+async function createOtp(ctx: AppContext, userId: string) {
+  const otp = await findOtpByUserId(ctx, userId)
+  if (otp != null) {
+    await ctx.db.delete(otps).where(eq(otps.userId, otp.userId))
+  }
+
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 10)
+  const randomOtp = generateOTP()
+
+  const otpHash = await bcrypt.hash(randomOtp, 10)
+
+  const [newOtp] = await ctx.db
+    .insert(otps)
+    .values({ userId, otpHash, expiresAt })
+    .returning({ id: otps.id })
+
+  return newOtp
+}
+
+async function sendEmailVerification(ctx: AppContext, email: string) {
+  ctx.logger.info("sending email verification", { email })
+  await delay(3000)
+  ctx.logger.info("email verification sent successfully", { email })
 }
 
 export const usersRouter = router({
@@ -55,6 +89,17 @@ export const usersRouter = router({
         return user
       })
 
+      const otpId = await createOtp(ctx, newUser.id)
+      if (otpId == null) {
+        ctx.logger.error("fail to create otp", {
+          status: "OTP_CREATE_ERROR",
+          action: "users.register",
+          userId: newUser.id,
+        })
+      }
+
+      sendEmailVerification(ctx, newUser.email)
+
       return newUser
     }
     catch (error) {
@@ -62,14 +107,14 @@ export const usersRouter = router({
         // Prevent leaking sensitive data.
         ctx.logger.error(error.message, {
           status: "POSTGRES_ERROR",
-          caller: "users.register",
+          action: "users.register",
         })
       }
       else {
         ctx.logger.error("uncaught exception", {
           error: (error as Error)?.message ?? undefined,
           status: "EXCEPTION_ERROR",
-          caller: "users.register",
+          action: "users.register",
         })
       }
       return { ok: false }
