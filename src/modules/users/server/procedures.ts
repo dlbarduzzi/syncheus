@@ -1,22 +1,37 @@
+import type { AppContext } from "@/trpc/main"
+
+import bcrypt from "bcryptjs"
 import postgres from "postgres"
+
 import { eq } from "drizzle-orm"
 import { delay } from "@/lib/utils"
 import { users } from "@/db/schemas/users"
+import { passwords } from "@/db/schemas/passwords"
+import { lowercase } from "@/tools/strings"
 import { signUpSchema } from "@/modules/users/schemas"
 import { procedure, router } from "@/trpc/main"
+
+async function findUserByEmail(ctx: AppContext, email: string) {
+  return await ctx.db.query.users.findFirst({
+    where: eq(users.email, lowercase(email)),
+  })
+}
 
 export const usersRouter = router({
   register: procedure.input(signUpSchema).mutation(async ({ ctx, input }) => {
     try {
-      // TODO: check if email already exists.
-
-      // Even tho `procedure.input()` is in place, I would to double check.
       const parsed = signUpSchema.safeParse(input)
       if (!parsed.success) {
         return { ok: false, errors: parsed.error }
       }
 
-      return await ctx.db.transaction(async tx => {
+      const user = await findUserByEmail(ctx, parsed.data.email)
+
+      if (user != null) {
+        return { ok: false, error: "This email is already register." }
+      }
+
+      const newUser = await ctx.db.transaction(async tx => {
         const [user] = await tx
           .insert(users)
           .values({ email: parsed.data.email })
@@ -26,8 +41,21 @@ export const usersRouter = router({
           return tx.rollback()
         }
 
-        return { ok: true, user }
+        const passwordHash = await bcrypt.hash(parsed.data.password, 12)
+
+        const [password] = await tx
+          .insert(passwords)
+          .values({ userId: user.id, passwordHash })
+          .returning({ id: passwords.id })
+
+        if (password == null) {
+          return tx.rollback()
+        }
+
+        return user
       })
+
+      return newUser
     }
     catch (error) {
       if (error instanceof postgres.PostgresError) {
